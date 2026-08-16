@@ -468,8 +468,9 @@ footer{padding:54px 0 34px;border-top:1px solid var(--line);background:#fff}
       <form class="lead-form" onsubmit="return submitLead(event)">
         <input type="tel" id="leadPhone" placeholder="+7 (___) ___-__-__" required>
         <button class="btn btn-primary" type="submit">Получить приглашение</button>
+        <label style="display:flex;gap:8px;align-items:flex-start;font-size:12px;line-height:1.4;opacity:.85;margin-top:10px;cursor:pointer;flex-basis:100%"><input type="checkbox" name="consent" required style="margin-top:2px;flex:none;width:15px;height:15px"><span>Согласен на обработку персональных данных и принимаю <a href="politika-konfidencialnosti.html" target="_blank" style="color:inherit;text-decoration:underline">Политику конфиденциальности</a>.</span></label>
       </form>
-      <div class="lead-ok" id="leadOk">✓ Спасибо! Менеджер свяжется с вами в ближайшее время.</div>
+      <div class="lead-ok" id="leadOk">✓ Мы открыли вашу почтовую программу — нажмите «Отправить». Не открылась? Напишите на <a href="mailto:ast.control@mail.ru" style="color:inherit;font-weight:600">ast.control@mail.ru</a>.</div>
     </div>
   </div>
 </section>
@@ -485,7 +486,7 @@ footer{padding:54px 0 34px;border-top:1px solid var(--line);background:#fff}
       <div><h5>О нас</h5><a href="#stories">Истории пар</a><a href="#faq">Вопросы</a><a href="#pick">Подбор вечера</a></div>
       <div><h5>Контакты</h5><a href="#" onclick="toLead();return false">Оставить заявку</a><a href="#">Telegram</a><a href="#">ВКонтакте</a></div>
     </div>
-    <div class="foot-bot"><div>© 2026 ТВекс. Живые знакомства.</div><div>Политика конфиденциальности · 18+</div></div>
+    <div class="foot-bot"><div>© 2026 ТВекс. Живые знакомства.<br>ИП Меньшин Руслан Александрович · ИНН 165128642192 · ОГРНИП 326169000157683</div><div><a href="politika-konfidencialnosti.html" style="color:inherit;text-decoration:underline">Политика конфиденциальности</a> · 18+</div></div>
   </div>
 </footer>
 
@@ -500,6 +501,7 @@ footer{padding:54px 0 34px;border-top:1px solid var(--line);background:#fff}
       <div class="msum" id="mSum"></div>
       <label>Ваше имя</label><input type="text" id="mName" placeholder="Имя">
       <label>Телефон</label><input type="tel" id="mPhone" placeholder="+7 (___) ___-__-__">
+      <label style="display:flex;gap:8px;align-items:flex-start;font-size:12.5px;line-height:1.4;font-weight:400;margin:10px 0 4px;cursor:pointer"><input type="checkbox" id="mConsent" style="margin-top:2px;flex:none;width:15px;height:15px"><span>Согласен на обработку персональных данных и принимаю <a href="politika-konfidencialnosti.html" target="_blank" style="color:inherit">Политику конфиденциальности</a>.</span></label>
       <button class="btn btn-primary" onclick="confirmBook()">Забронировать место</button>
     </div>
     <div class="ok" id="mOk"><div class="em">🎉</div><h3>Место забронировано!</h3><p class="muted">Менеджер подтвердит бронь и пришлёт детали. До встречи на вечере!</p><button class="btn btn-ghost" onclick="closeModal()" style="margin-top:16px">Закрыть</button></div>
@@ -570,11 +572,22 @@ function book(t,w,v,p){cur={t,w,v,p};
   document.getElementById('modal').classList.add('open');
 }
 function closeModal(){document.getElementById('modal').classList.remove('open')}
-function confirmBook(){document.getElementById('mForm').style.display='none';document.getElementById('mOk').style.display='block'}
+function confirmBook(){
+  var n=document.getElementById('mName').value.trim(), p=document.getElementById('mPhone').value.trim();
+  var s=document.getElementById('mSum'); var sum=s?s.textContent.trim():'';
+  if(!p){alert('Укажите телефон, чтобы мы подтвердили бронь');return}
+  var c=document.getElementById('mConsent'); if(c&&!c.checked){alert('Отметьте согласие на обработку персональных данных');return}
+  window.location.href='mailto:ast.control@mail.ru?subject='+encodeURIComponent('ТВекс — бронирование места')+'&body='+encodeURIComponent('Бронирование с сайта ТВекс\n\nИмя: '+n+'\nТелефон: '+p+'\nВечер: '+sum);
+  document.getElementById('mForm').style.display='none';
+  document.getElementById('mOk').style.display='block'}
 
 function toggleFaq(b){b.parentElement.classList.toggle('open');const a=b.nextElementSibling;a.style.maxHeight=a.style.maxHeight?'':a.scrollHeight+'px';}
 function toLead(){document.querySelector('.cta-final').scrollIntoView({behavior:'smooth'});setTimeout(()=>document.getElementById('leadPhone').focus(),500)}
-function submitLead(e){e.preventDefault();document.querySelector('.lead-form').style.display='none';document.getElementById('leadOk').style.display='block';return false}
+function submitLead(e){e.preventDefault();
+  var ph=document.getElementById('leadPhone').value.trim();
+  window.location.href='mailto:ast.control@mail.ru?subject='+encodeURIComponent('ТВекс — заявка на приглашение')+'&body='+encodeURIComponent('Заявка с сайта ТВекс\n\nТелефон: '+ph);
+  document.querySelector('.lead-form').style.display='none';
+  document.getElementById('leadOk').style.display='block';return false}
 
 io2();
 // safety net: never leave content hidden if IntersectionObserver is unavailable / doesn't fire
